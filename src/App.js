@@ -1,36 +1,26 @@
 import React from 'react';
 import Cart from './Cart';
 import Navbar from './Navbar';
+import firebase from 'firebase'
+// import {db}  from './index'
 
 class App extends React.Component {
   
   constructor(){
     super();
     this.state = {
-        products :  [
-            {
-                title : 'Phone',
-                price : 29999,
-                qty : 2,
-                img : 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bW9iaWxlJTIwcGhvbmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
-                id : 1 
-            }, 
-            {
-                title : 'Watch',
-                price : 999,
-                qty : 3,
-                img : 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2F0Y2h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
-                id : 2 
-            }, 
-            {
-                title : 'Laptop',
-                price : 70000,
-                qty : 1,
-                img : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bGFwdG9wfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
-                id : 3
-            }     
-        ]
+        products :  []
     }
+  }
+
+  componentDidMount(){
+    firebase
+    .firestore()
+    .collection('products')
+    .get()
+    .then((snapshot)=>{
+      console.log(snapshot);
+    })
   }
 
   handleIncreaseQuantity = (product) => {
@@ -62,7 +52,7 @@ class App extends React.Component {
   handleDeleteProduct = (id)=>{
       const {products} = this.state;
 
-      const items = products.filter((item)=> item.id != id );
+      const items = products.filter((item)=> item.id !== id );
 
       this.setState({
           products:items
