@@ -2,7 +2,7 @@ import React from 'react';
 import Cart from './Cart';
 import Navbar from './Navbar';
 import {db} from './firebase';
-import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
+import { collection, doc , onSnapshot, query, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
 
 
@@ -59,7 +59,7 @@ class App extends React.Component {
         products,
         loading : false
       })
-      
+
     })
   }
 
@@ -67,40 +67,37 @@ class App extends React.Component {
     this.getDataFromDatabase()
   }
 
-  handleIncreaseQuantity = (product) => {
+  handleIncreaseQuantity = async (product) => {
       const {products} = this.state;
       const index = products.indexOf(product);
-      
-      products[index].qty += 1;
+      const id =   products[index].id;
 
-      this.setState({
-          products : products
-      })
+      const docRef = doc(db, "products", id);
+
+      await updateDoc(docRef, {
+        qty: products[index].qty + 1
+      });
   }
 
-  handleDecreaseQuantity = (product) => {
+  handleDecreaseQuantity = async (product) => {
       const {products} = this.state;
       const index = products.indexOf(product);
-      
+      const id =   products[index].id;
+
+      const docRef = doc(db, "products", id);
+
       if(products[index].qty === 0){
-          return;
+        return;
       }
-
-      products[index].qty -= 1;
-
-      this.setState({
-          products : products
-      })
+      await updateDoc(docRef, {
+        qty: products[index].qty - 1
+      });
   }
 
-  handleDeleteProduct = (id)=>{
+  handleDeleteProduct = async (id)=>{
       const {products} = this.state;
 
-      const items = products.filter((item)=> item.id !== id );
-
-      this.setState({
-          products:items
-      })
+      await deleteDoc(doc(db, "products", id));      
   }
 
   getCartCount = ()=>{
@@ -128,12 +125,25 @@ class App extends React.Component {
     return cartTotal;
   };
 
+  addProduct = async ()=>{
+    // Add a new document with a generated id.
+    const docRef = await addDoc(collection(db, "products"), {
+      title: "Laptop",
+      qty: 1,
+      price: 79999,
+      img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuQ5er-A2kiwnHCcZ3M2COQn-eLwthDSxm2w&usqp=CAU"
+    });
+
+    console.log("Document written with ID: ", docRef.id);
+  }
+
   render(){
     const {products, loading} = this.state;
   
     return (
       <div className="App">
         <Navbar count = {this.getCartCount()} />
+        <button onClick={this.addProduct} style={{padding: 8, fontSize: 20, margin: 10}}>Add Product</button>       
         <Cart
           products = {products} 
           onIncreaseQuantity = {this.handleIncreaseQuantity}
