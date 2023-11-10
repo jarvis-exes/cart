@@ -4,8 +4,6 @@ import Navbar from './Navbar';
 import {db} from './firebase';
 import { collection, doc , onSnapshot, query, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 
-
-
 class App extends React.Component {
   
   constructor(){
@@ -15,30 +13,7 @@ class App extends React.Component {
         loading : true
     }
   }
-
-  // getDataFromDatabase = async ()=>{
-  //   const querySnapshot = await getDocs(collection(db, "products"));
-    
-  //   querySnapshot.forEach((doc) => {
-  //     // doc.data() is never undefined for query doc snapshots
-  //     console.log(doc.id, " => ", doc.data());
-
-  //   });
-
-  //   const products = querySnapshot.docs.map((doc)=>{
-  //     const data =  doc.data();
-
-  //     data['id'] = doc.id;
-  //     return data;
-  //   })
-
-  //   this.setState({
-  //     products,
-  //     loading : false
-  //   })
-
-  // }
-
+  
   getDataFromDatabase = async ()=>{
     const q = await query(collection(db, "products"));
     const unsubscribe = onSnapshot(q ,(querySnapshot)=>{
